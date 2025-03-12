@@ -11,6 +11,7 @@ function image = draw_landmark(original, cut, xyz, coord)
         17, 18; 18, 19; 19, 20; % Meñique
         0, 5; 0, 9; 0, 13; 0, 17; % Conexiones base dedos
         5, 9; 9, 13; 13, 17; % Conexiones entre bases
+        0, 1;
     ];
 
     % Recorrer cada imagen
