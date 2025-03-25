@@ -1,4 +1,4 @@
-function [img_adapted_list, original_sizes] = pre_process_landmark(cut)
+function [img_adapted_list] = pre_process_landmark(cut)
     img_adapted_list = {};  % Para almacenar las imágenes procesadas
     original_sizes = [];    % Para almacenar las dimensiones originales de cada imagen
     
@@ -20,6 +20,6 @@ function [img_adapted_list, original_sizes] = pre_process_landmark(cut)
 
         % Almacenar la imagen procesada y las dimensiones originales
         img_adapted_list{end+1} = img_adapted;  % Almacenar la imagen procesada
-        original_sizes = [original_sizes; original_size];  % Almacenar el tamaño original
+
     end
 end
