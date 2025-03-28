@@ -1,9 +1,5 @@
 function state = detect_finger_state(xyz, type)
-    persistent prev_state; % Estado previo de los dedos
-    
-    if isempty(prev_state)
-        prev_state = zeros(1, 12); % Inicializar si es la primera vez
-    end
+
 
     state = zeros(1, 12);
     
@@ -11,11 +7,6 @@ function state = detect_finger_state(xyz, type)
     fingertips = [9, 13, 17, 21]; % Puntas de los dedos (sin el pulgar)
     basepoints = [6, 10, 14, 18]; % Bases de los dedos
 
-    % Frecuencias asignadas por mano y dedo
-    frequencies_left = [261.63, 293.66, 329.63, 349.23]; % Do, Re, Mi, Fa
-    frequencies_right = [392.00, 440.00, 493.88, 523.25]; % Sol, La, Si, Do subtono
-    duration = 0.2; % Duración del sonido
-    Fs = 8000; % Frecuencia de muestreo
 
     for i = 1:numel(xyz)
         temp = xyz{i}; 
@@ -41,24 +32,41 @@ function state = detect_finger_state(xyz, type)
                 end
             end
         end
-    end
 
-    % Comparar con el estado anterior y reproducir sonido si cambia
-    for k = 1:4 % Solo recorrer los 4 dedos (sin el pulgar)
-        if state(8 + k) ~= prev_state(8 + k) && state(8 + k) == 1  % Mano derecha
-            play_note(frequencies_right(k), duration, Fs);
-        elseif state(5 - k) ~= prev_state(5 - k) && state(5 - k) == 1  % Mano izquierda
-            play_note(frequencies_left(k), duration, Fs);
+        %pulgares
+        thumb_base = temp(5, :); % Punta del pulgar
+        thumb_prebase = temp(4, :); % Punto anterior a la punta
+        thumb_inner = temp(1, :); % Punto base de la muñeca (para la comparación con el pulgar)
+        
+        dist_5_1 = norm(thumb_base - thumb_inner); % Distancia entre el pulgar y el punto base de la muñeca
+        dist_4_1 = norm(thumb_prebase - thumb_inner); % Distancia entre el punto anterior al pulgar y la muñeca
+        
+        % Verificar si el pulgar está extendido hacia afuera
+        thumb_middle = temp(6, :); % Punto intermedio del pulgar
+        thumb_inner_point = temp(3, :); % Punto interior del pulgar
+        
+        dist_5_6 = norm(thumb_base - thumb_middle);
+        dist_5_3 = norm(thumb_base - thumb_inner_point);
+        
+        % Condición para pulgar extendido hacia afuera
+        if dist_5_6 > dist_5_3
+            if orientation == 1  % Mano derecha
+                state(7) = 1; % Pulgar extendido hacia afuera (mano derecha)
+            else  % Mano izquierda
+                state(6) = 1; % Pulgar extendido hacia afuera (mano izquierda)
+            end
         end
+        
+        % Condición para pulgar cerrado
+        if dist_5_1 < dist_4_1 
+            if orientation == 1  % Mano derecha
+                state(8) = 1; % Pulgar cerrado (mano derecha)
+            else  % Mano izquierda
+                state(5) = 1; % Pulgar cerrado (mano izquierda)
+            end 
+        end
+
+
     end
-
-    prev_state = state; % Actualizar el estado previo
 end
 
-% Función para generar y reproducir la nota musical
-function play_note(freq, duration, Fs)
-    t = 0:1/Fs:duration;
-    y = sin(2 * pi * freq * t);
-    sound(y, Fs);
-    pause(duration); % Pausa para evitar sonidos superpuestos
-end
