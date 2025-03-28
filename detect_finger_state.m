@@ -1,55 +1,64 @@
 function state = detect_finger_state(xyz, type)
-    % Inicializar estado de 5 dedos a "arriba" (1)
+    persistent prev_state; % Estado previo de los dedos
+    
+    if isempty(prev_state)
+        prev_state = zeros(1, 12); % Inicializar si es la primera vez
+    end
+
     state = zeros(1, 12);
     
-    % Definir índices de los landmarks para los dedos
-    fingertips = [5, 9, 13, 17, 21]; % Puntas de los dedos
-    basepoints = [2, 6, 10, 14, 18]; % Puntos base para comparación
-    
-    for i = 1:numel(xyz) 
+    % Índices de landmarks para puntas y bases de los dedos
+    fingertips = [9, 13, 17, 21]; % Puntas de los dedos (sin el pulgar)
+    basepoints = [6, 10, 14, 18]; % Bases de los dedos
+
+    % Frecuencias asignadas por mano y dedo
+    frequencies_left = [261.63, 293.66, 329.63, 349.23]; % Do, Re, Mi, Fa
+    frequencies_right = [392.00, 440.00, 493.88, 523.25]; % Sol, La, Si, Do subtono
+    duration = 0.2; % Duración del sonido
+    Fs = 8000; % Frecuencia de muestreo
+
+    for i = 1:numel(xyz)
         temp = xyz{i}; 
-        orientation = type{i}; % Indica si es mano derecha (1) o izquierda (0)
+        orientation = type{i}; 
         
-        % Verificar que haya suficientes landmarks
         if size(temp, 1) < 21
             warning('No se han detectado suficientes landmarks. Retornando estado predeterminado.');
             return;
         end
         
-        ref_dist = 1.05* norm(temp(1, :) - temp(2, :)); % Distancia referencia (muñeca a punto 2)
-        
-        % Evaluar cada dedo (del índice 1 al 5)
-        for j = 1:5
+        ref_dist = 1.05 * norm(temp(1, :) - temp(2, :));
+
+        for j = 1:4 % Solo recorremos 4 dedos (sin el pulgar)
             fingertip = temp(fingertips(j), :);
             basepoint = temp(basepoints(j), :);
-            
-            % Calcular distancia entre la punta y la base del dedo
             dist_finger = norm(fingertip - basepoint);
-            
-            % Comparar con la distancia de referencia
+
             if dist_finger < ref_dist
                 if orientation == 1  % Mano derecha
-                    state(7+ j) = 1; % Dedo doblado
+                    state(8 + j) = 1; 
                 else  % Mano izquierda
-                    state(6 - j ) = 1; % Invertir para la mano izquierda
+                    state(5 - j) = 1; 
                 end
             end
         end
+    end
 
-        % Verificar si el pulgar está extendido hacia afuera
-        thumb_base = temp(5, :); % Punto base del pulgar
-        thumb_middle = temp(6, :); % Punto intermedio del pulgar
-        thumb_inner = temp(3, :); % Punto interior del pulgar
-
-        dist_5_6 = norm(thumb_base - thumb_middle);
-        dist_5_3 = norm(thumb_base - thumb_inner);
-        
-        if dist_5_6 > dist_5_3
-            if orientation == 1  % Mano derecha
-                state(7) = 1; % Pulgar extendido hacia afuera (mano derecha)
-            else  % Mano izquierda
-                state(6) = 1; % Pulgar extendido hacia afuera (mano izquierda)
-            end
+    % Comparar con el estado anterior y reproducir sonido si cambia
+    for k = 1:4 % Solo recorrer los 4 dedos (sin el pulgar)
+        if state(8 + k) ~= prev_state(8 + k) && state(8 + k) == 1  % Mano derecha
+            play_note(frequencies_right(k), duration, Fs);
+        elseif state(5 - k) ~= prev_state(5 - k) && state(5 - k) == 1  % Mano izquierda
+            play_note(frequencies_left(k), duration, Fs);
         end
     end
+
+    prev_state = state; % Actualizar el estado previo
+end
+
+% Función para generar y reproducir la nota musical
+function play_note(freq, duration, Fs)
+    t = 0:1/Fs:duration;
+    y = sin(2 * pi * freq * t);
+    sound(y, Fs);
+    pause(duration); % Pausa para evitar sonidos superpuestos
 end
