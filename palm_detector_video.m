@@ -58,13 +58,4 @@ end
 
 
 
-function play_note_if_finger_drops(prev_state, curr_state)
-    % Compara el estado anterior y actual para detectar cuando un dedo baja
-    freqs = [261.63, 293.66, 329.63, 349.23, 392.00]; % Notas C, D, E, F, G
 
-    for i = 1:5
-        if prev_state(i) == 1 && curr_state(i) == 0
-            sound(sin(2 * pi * freqs(i) * (0:1/8000:0.2)), 8000); % Generar sonido
-        end
-    end
-end
