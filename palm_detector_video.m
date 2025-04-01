@@ -31,6 +31,7 @@ while true
              % Detectar estado de los dedos y reproducir sonido
             curr_state = detect_finger_state(xyz, type);
             disp(curr_state);
+            play_note(curr_state);
 
             %play_note_if_finger_drops(prev_state, curr_state);
     
