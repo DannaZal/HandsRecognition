@@ -1,18 +1,14 @@
 function play_note(banderas)
-    % Frecuencias de las 12 notas
+    % Frecuencias de las notas según la nueva lógica
     frequencies = [
-        261.63,  % Do (C)  - 261.63 Hz
-        277.18,  % Do sostenido (C#) - 277.18 Hz
-        293.66,  % Re (D)  - 293.66 Hz
-        311.13,  % Re sostenido (D#) - 311.13 Hz
-        329.63,  % Mi (E)  - 329.63 Hz
-        349.23,  % Fa (F)  - 349.23 Hz
-        369.99,  % Fa sostenido (F#) - 369.99 Hz
-        392.00,  % Sol (G) - 392.00 Hz
-        415.30,  % Sol sostenido (G#) - 415.30 Hz
-        440.00,  % La (A)  - 440.00 Hz
-        466.16,  % La sostenido (A#) - 466.16 Hz
-        493.88   % Si (B)  - 493.88 Hz
+        261.63,  % Do (C) - Mano izquierda, Índice
+        293.66,  % Re (D) - Mano izquierda, Medio
+        329.63,  % Mi (E) - Mano izquierda, Anular
+        349.23,  % Fa (F) - Mano izquierda, Meñique
+        392.00,  % Sol (G) - Mano derecha, Índice
+        440.00,  % La (A) - Mano derecha, Medio
+        493.88,  % Si (B) - Mano derecha, Anular
+        523.25   % Do subtono (C') - Mano derecha, Meñique
     ];
 
     duration = 0.3;  % Duración del sonido en segundos
@@ -26,10 +22,13 @@ function play_note(banderas)
         return;  % Si ninguna bandera está activada, no hacemos nada
     end
 
-    % Iteramos sobre las 12 notas
-    for i = 1:12
-        if banderas(i) == 1  % Si la bandera está activada para esta nota
-            freq = frequencies(i);  % Frecuencia de la nota correspondiente
+    % Mapeo de banderas a frecuencias
+    mapping = [1, 2, 3, 4, 5, 6, 7, 8];
+
+    % Iteramos sobre las 8 posibles notas (4 dedos por mano)
+    for i = 1:8
+        if banderas(mapping(i)) == 1  % Si la bandera está activada para esta nota
+            freq = frequencies(i);    % Frecuencia de la nota correspondiente
             y = y + sin(2 * pi * freq * t);  % Sumamos la señal correspondiente
         end
     end
@@ -43,5 +42,4 @@ function play_note(banderas)
 
     % Reproducir el sonido
     sound(y, Fs);
-
 end

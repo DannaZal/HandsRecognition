@@ -1,6 +1,6 @@
 function hands = post_process(image, boxes)
     score_threshold = 0.8;
-    max_hands = 3;  % Máximo de manos a detectar
+    max_hands = 2;  % Máximo de manos a detectar
     
     % Obtener dimensiones de la imagen
     image_height = size(image, 1);
