@@ -26,17 +26,21 @@ projectPath = fileparts(mfilename('fullpath'));
 
 % Agregar las carpetas necesarias al path de MATLAB
 addpath(projectPath); % Carpeta principal
-addpath(fullfile(projectPath, 'funciones')); % Carpeta con funciones auxiliares
-addpath(fullfile(projectPath, 'modelos')); % Carpeta con modelos de IA (si existen)
-addpath(fullfile(projectPath, 'scripts')); % Carpeta con otros scripts
+addpath(fullfile(projectPath, 'funciones')); % Funciones auxiliares
+addpath(fullfile(projectPath, 'modelos')); % Modelos de IA
+addpath(fullfile(projectPath, 'scripts')); % Otros scripts
+addpath(fullfile(projectPath, 'GUI')); % Carpeta GUI
 
-% Verificar que la GUI "hand_gesture_music_ui" existe
-if exist('hand_gesture_music_ui.mlapp', 'file')
-    disp('Archivo de la GUI encontrado.');
+% Ruta completa al archivo .mlapp en la carpeta GUI
+guiFilePath = fullfile(projectPath, 'GUI', 'hand_gesture_music_ui.mlapp');
+
+% Verificar que la GUI "hand_gesture_music_ui" existe en la carpeta GUI
+if exist(guiFilePath, 'file') == 2
+    disp('✅ Archivo de la GUI encontrado en la carpeta GUI.');
 else
-    error('❌ ERROR: No se encontró "hand_gesture_music_ui.mlapp". Asegúrate de que el archivo está en la carpeta correcta.');
+    error('❌ ERROR: No se encontró "hand_gesture_music_ui.mlapp" en la carpeta GUI.');
 end
 
 % Ejecutar la aplicación GUI
-disp(' Iniciando la aplicación...');
-hand_gesture_music_ui;  % Llamar la GUI para que se ejecute
+disp('🚀 Iniciando la aplicación...');
+hand_gesture_music_ui;  % Llamar la GUI
