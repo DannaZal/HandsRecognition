@@ -3,7 +3,7 @@ Laboratorio de Inteligencia y Visión Artificial: Alan Turing
 ESCUELA POLITÉCNICA NACIONAL
 Quito - Ecuador
 
-autores: DannaZal - AlexanderMotoche
+autores: DannaZal - AlexanderMotoche(Xlex71,Xelan)
 dannacr65@gmail.com
 alexander.motoche@epn.edu.ec
 

@@ -23,7 +23,6 @@ function [finimg, curr_state] = process_video_frame(frame)
 
             % Detectar estado de los dedos y reproducir sonido
             curr_state = detect_finger_state(xyz, type);
-            disp(curr_state);
 
             % En la GUI, `play_note(curr_state)` será llamado desde otro lugar.
         else
